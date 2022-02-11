@@ -1,0 +1,8 @@
+<form [formGroup]="userFG">
+  <input type="text" placeholder="email" formControlName='email'>
+  <input type="text" placeholder="password" formControlName='password'>
+  <button (click)="signUp()" [disabled]="userFG.invalid">dodaj</button>
+  <button (click)="show()" [disabled]="userFG.invalid">pokaz</button>
+  <button (click)="update()" [disabled]="userFG.invalid">update</button>
+</form>
+
