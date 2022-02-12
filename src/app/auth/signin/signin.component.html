@@ -1,0 +1,6 @@
+
+<form [formGroup]="userSignInFG">
+  <input type="text" placeholder="username" formControlName='username'>
+  <input type="text" placeholder="password" formControlName='password'>
+  <button (click)="signIn()" >zaloguj</button>
+</form>

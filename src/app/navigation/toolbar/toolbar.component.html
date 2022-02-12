@@ -1,0 +1,8 @@
+<div>
+  <ul>
+    <li *ngIf="isAuth"><a >Uzytkownik</a></li>
+    <li *ngIf="!isAuth"><a routerLink="/signup">signup</a></li>
+    <li *ngIf="!isAuth"><a routerLink="/login">login</a></li>
+    <li *ngIf="isAuth"><a>logout</a></li>
+  </ul>
+</div>

@@ -1,0 +1,15 @@
+<div *ngIf="user">
+  <p>Witaj! {{user.username}}</p>
+  <div class="container">
+    <div class="attribute">
+      <p>username: <span>{{user.username}}</span></p>
+    </div>
+    <div class="attribute">
+      <p>adres email: <span>{{user.email}}</span></p>
+    </div>
+    <div class="attribute">
+      <p>id: <span>{{user.id}}</span></p>
+    </div>
+    <button (click)="updateEmail(user.id)">update email</button>
+  </div>
+</div>

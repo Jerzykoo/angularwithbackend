@@ -1,8 +1,25 @@
-<form [formGroup]="userFG">
-  <input type="text" placeholder="email" formControlName='email'>
-  <input type="text" placeholder="password" formControlName='password'>
-  <button (click)="signUp()" [disabled]="userFG.invalid">dodaj</button>
-  <button (click)="show()" [disabled]="userFG.invalid">pokaz</button>
-  <button (click)="update()" [disabled]="userFG.invalid">update</button>
-</form>
+<app-toolbar></app-toolbar>
+<main>
+  <router-outlet></router-outlet>
+</main>
 
+
+<!-- <div>
+  <h3>Lista:</h3>
+  <p *ngFor="let user of users" class="user">
+    {{user.email}}
+    {{user.password}}
+    {{user.id}}
+    <button (click)="updateUser(user.id)">update email</button>
+  </p>
+</div> -->
+
+<!-- <div *ngIf="activeUser">
+  <h3>Zalogowany użytkownik:</h3>
+  Username:<p>{{activeUser.username}}</p>
+  Email:<p>{{activeUser.email}}</p>
+</div> -->
+
+<!-- [disabled]="userFG.invalid"
+[disabled]="userFG.invalid"
+[disabled]="userFG.invalid" -->
