@@ -9,11 +9,17 @@ import { UsersService } from 'src/app/users.service';
 })
 export class ToolbarComponent implements OnInit, OnDestroy {
   authSubscription!: Subscription;
+  initSubscription!: Subscription;
   isAuth = false;
   constructor(private usersService: UsersService) { }
 
   ngOnInit(): void {
     this.authSubscription = this.usersService.authChange.subscribe((result) => {
+      this.isAuth = result;
+      // console.log(result);
+
+    })
+    this.initSubscription = this.usersService.initChange.subscribe((result) => {
       this.isAuth = result;
       console.log(result);
 

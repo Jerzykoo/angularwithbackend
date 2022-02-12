@@ -2,6 +2,10 @@
   <p>Witaj! {{user.username}}</p>
   <div class="container">
     <div class="attribute">
+      <img src="user.avatarPicture._url" alt="">
+      <p>awatar: <span>{{user.avatarPicture._url}}</span></p>
+    </div>
+    <div class="attribute">
       <p>username: <span>{{user.username}}</span></p>
     </div>
     <div class="attribute">
@@ -10,6 +14,6 @@
     <div class="attribute">
       <p>id: <span>{{user.id}}</span></p>
     </div>
-    <button (click)="updateEmail(user.id)">update email</button>
+    <button (click)="onEditClick(user.id)">update user</button>
   </div>
 </div>

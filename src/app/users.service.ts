@@ -12,6 +12,8 @@ export class UsersService {
   activeUser!: any;
   authChange = new Subject<boolean>();
 
+  initChange = new Subject<boolean>();
+
   userSubject = new Subject<User[]>();
   constructor(private router: Router) {
     const Parse = require('parse');
@@ -22,6 +24,7 @@ export class UsersService {
       'amffx9uRAZzjUFdzWnRTxo3GyDskisqcIA7KcNOw'
     );
 
+    this.initChange.next(true);
     // this.authChange.next(false);
     // this.fetchUsers();
   }
@@ -32,16 +35,19 @@ export class UsersService {
 
       const email:string = currentUser.get('email');
       const username:string = currentUser.get('username');
+      const avatarPicture:string = currentUser.get('avatarPicture');
       this.activeUser = {
         username,
         email,
+        avatarPicture,
         id: currentUser.id
       };
         this.isAuthenticated = true;
-        this.authChange.next(true);
-        this.router.navigate(['/user']);
+        this.initChange.next(true);
+        // this.router.navigate(['/user']);
         console.log('a');
     } else {
+      this.initChange.next(false);
       console.log('nie ma zalogowanego');
       this.router.navigate(['/login']);
         // show the signup or login page
@@ -64,9 +70,11 @@ export class UsersService {
       // Do stuff after successful login
       const email:string = user.get('email');
       const username:string = user.get('username');
+      const avatarPicture:string = user.get('avatarPicture');
       this.activeUser = {
         username,
         email,
+        avatarPicture,
         id: user.id
       };
       this.isAuthenticated = true;
@@ -89,6 +97,7 @@ export class UsersService {
     user.set('username', userInfo.username);
     user.set('email', userInfo.email);
     user.set('password', userInfo.password);
+    user.set('avatarPicture', new Parse.File("resume.txt", { base64: btoa("My file content") }));
     try {
       let userResult: Parse.User = await user.signUp();
       console.log('User signed up', userResult);
@@ -98,19 +107,25 @@ export class UsersService {
   })();
  }
 
- updateUser(id: string){
+ updateUser(userData: any){
   (async () => {
     const User: Parse.User = new Parse.User();
     const query: Parse.Query = new Parse.Query('User');
 
     try {
       // Finds the user by its ID
-      let user: Parse.Object = await query.get(id);
+      let user: Parse.Object = await query.get(userData.id);
       // Updates the data we want
-      user.set('username', 'Tibo');
-      user.set('email', 'mewaw@onet.pl');
+      user.set('username', userData.username);
+      user.set('email', userData.email);
       try {
         // Saves the user with the updated data
+        this.activeUser = {
+          username: user.get('username'),
+          email: user.get('email'),
+          id: user.id
+        };
+
         let response: Parse.Object = await user.save();
         this.router.navigate(['/user']);
         console.log('Updated user', response);
