@@ -112,7 +112,9 @@ export class UsersService {
       let userResult: Parse.User = await user.signUp();
       console.log('User signed up', userResult);
       this.uiService.showSnackBar('Rejestracja zakończona pomyślnie :)',null,3000);
-      this.router.navigate(['/login']);
+      this.isAuthenticated = true;
+      this.authChange.next(true);
+      this.router.navigate(['/user']);
     } catch (error: any) {
       this.uiService.showSnackBar(error.message,null,1000);
       console.error('Error while signing up user', error);
