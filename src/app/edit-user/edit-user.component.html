@@ -1,8 +1,16 @@
 <form [formGroup]="userSignUpFG">
-  <input type="text" placeholder="username" formControlName='username'>
-  <input type="text" placeholder="email" formControlName='email'>
-  <!-- <input type="text" placeholder="password" formControlName='password'> -->
-  <button (click)="onUpdate()" >Update</button>
+  <div>
+    <p class="avatarChange">Zmień awatar</p>
+    <input type="file" (change)="onFileChanged($event,user.id)" class="file">
+  </div>
+  <mat-form-field>
+    <input type="text" placeholder="username" formControlName='username' matInput>
+  </mat-form-field>
+  <mat-form-field>
+    <input type="text" placeholder="email" formControlName='email' matInput>
+  </mat-form-field>
+
+  <button (click)="onUpdate()" [disabled]="userSignUpFG.invalid" mat-raised-button color="warn">Update</button>
 </form>
 
 

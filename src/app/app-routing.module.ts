@@ -1,5 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { AuthGuard } from './auth.guard';
+
 import { SigninComponent } from './auth/signin/signin.component';
 import { SignupComponent } from './auth/signup/signup.component';
 import { EditUserComponent } from './edit-user/edit-user.component';
@@ -8,7 +10,7 @@ import { UserComponent } from './user/user.component';
 const routes: Routes = [
   {
     path: '',
-    component: SigninComponent
+    component: UserComponent, canActivate: [AuthGuard]
    },
   {
     path: 'login',
@@ -16,14 +18,14 @@ const routes: Routes = [
    },
   {
     path: 'signup',
-    component: SignupComponent
+    component: SignupComponent,
    },
   {
     path: 'user',
-    component: UserComponent
+    component: UserComponent, canActivate: [AuthGuard]
    },
   {
-    path: 'edit-user/:id',
+    path: 'edit-user/:id', canActivate: [AuthGuard],
     component: EditUserComponent
    },
   // {
@@ -34,6 +36,7 @@ const routes: Routes = [
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
+  providers:[AuthGuard]
 })
 export class AppRoutingModule { }

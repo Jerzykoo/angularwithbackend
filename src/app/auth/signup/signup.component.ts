@@ -10,12 +10,15 @@ import { UsersService } from 'src/app/users.service';
 export class SignupComponent implements OnInit {
   userSignUpFG!: FormGroup;
   constructor(private usersService: UsersService, private fb: FormBuilder) { }
-  
+
     ngOnInit(): void {
       this.userSignUpFG = this.fb.group({
-        username: ['', Validators.required],
-        email: ['', Validators.required],
-        password: ['', Validators.required]
+        username: ['', Validators.compose(
+          [Validators.minLength(3), Validators.required])],
+        email: ['', Validators.compose(
+          [Validators.email, Validators.required])],
+        password: ['', Validators.compose(
+          [Validators.minLength(4), Validators.required])]
       })
 
     }
@@ -24,5 +27,6 @@ export class SignupComponent implements OnInit {
   signUp(){
     // this.usersService.register(this.userFG.value);
     this.usersService.register(this.userSignUpFG.value);
+    this.userSignUpFG.reset();
   }
 }

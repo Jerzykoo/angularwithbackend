@@ -1,7 +1,23 @@
 <form [formGroup]="userSignUpFG">
-  <input type="text" placeholder="username" formControlName='username'>
-  <input type="text" placeholder="email" formControlName='email'>
-  <input type="text" placeholder="password" formControlName='password'>
-  <button (click)="signUp()" >zarejestruj</button>
+
+  <mat-form-field appearance="standard">
+    <input
+     type="text"
+      placeholder="username"
+      formControlName='username'
+      matInput>
+      <mat-error >Nazwa użytkownika musi składać się z conajmniej 3 znaków.</mat-error>
+  </mat-form-field>
+
+  <mat-form-field>
+    <input type="email" placeholder="email" formControlName='email'  matInput>
+    <mat-error>Niewłaściwy zapis adresu email</mat-error>
+  </mat-form-field>
+  <mat-form-field>
+    <input type="password" placeholder="password" formControlName='password' matInput>
+    <mat-error>Hasło musi składać się z conajmniej 4 znaków.</mat-error>
+  </mat-form-field>
+
+  <button (click)="signUp()" mat-raised-button color="primary" [disabled]="userSignUpFG.invalid">zarejestruj</button>
 </form>
 

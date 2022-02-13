@@ -1,5 +1,7 @@
 export interface User{
+  username: string,
   email: string,
-  password: string,
+  avatarPicture: File,
+  isAvatar: boolean,
   id?:string
 }

@@ -1,8 +1,13 @@
-<div>
-  <ul>
-    <li *ngIf="isAuth"><a >Uzytkownik</a></li>
-    <li *ngIf="!isAuth"><a routerLink="/signup">signup</a></li>
-    <li *ngIf="!isAuth"><a routerLink="/login">login</a></li>
-    <li *ngIf="isAuth"><a>logout</a></li>
-  </ul>
-</div>
+<mat-toolbar color="primary">
+  <div><a class="title">App</a></div>
+  <div class="nav">
+    <ul>
+      <li *ngIf="isAuth"><a routerLink="/user">Uzytkownik</a></li>
+      <li *ngIf="!isAuth"><a routerLink="/signup">signup</a></li>
+      <li *ngIf="!isAuth"><a routerLink="/login">login</a></li>
+      <li *ngIf="isAuth" (click)="onLogout()"><a>logout</a></li>
+      <!-- <li ><a>logout</a></li> -->
+    </ul>
+  </div>
+
+</mat-toolbar>

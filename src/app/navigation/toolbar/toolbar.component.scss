@@ -1,14 +1,21 @@
 ul{
   list-style: none;
   display: flex;
+
   li{
     margin-right: 10px;
   }
 }
 
+div.nav{
+  margin-left: auto;
+}
+
 a{
   text-decoration: none;
-  // color: white;
-  color: black;
+  color: white;
   cursor: pointer;
+}
+a.title{
+  cursor: default;
 }

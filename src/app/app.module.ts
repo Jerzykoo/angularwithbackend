@@ -10,6 +10,12 @@ import { SigninComponent } from './auth/signin/signin.component';
 import { UserComponent } from './user/user.component';
 import { EditUserComponent } from './edit-user/edit-user.component';
 
+// import { AuthGuard } from './auth.guard';
+import { UsersService } from './users.service';
+import { MaterialModule } from './material.module';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { UIService } from './ui.service';
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -17,14 +23,16 @@ import { EditUserComponent } from './edit-user/edit-user.component';
     SignupComponent,
     SigninComponent,
     UserComponent,
-    EditUserComponent
+    EditUserComponent,
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     ReactiveFormsModule,
+    MaterialModule,
+    BrowserAnimationsModule
   ],
-  providers: [],
+  providers: [UsersService,UIService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

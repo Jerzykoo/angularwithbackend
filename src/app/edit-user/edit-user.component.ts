@@ -10,9 +10,10 @@ import { UsersService } from '../users.service';
 export class EditUserComponent implements OnInit {
   user!: any;
   userId!: any;
+  path!: File;
   constructor(private readonly router: Router,
     private activatedRoute: ActivatedRoute, private fb: FormBuilder, private usersService: UsersService) {
-      this.user = this.usersService.getUser();
+      this.user = this.usersService.getCurrentUser();
       console.log(this.user);
      }
     userSignUpFG!: FormGroup;
@@ -20,8 +21,10 @@ export class EditUserComponent implements OnInit {
   ngOnInit(): void {
     console.log(this.activatedRoute.snapshot.params.id);
     this.userSignUpFG = this.fb.group({
-      username: [this.user.username, Validators.required],
-      email: [this.user.email, Validators.required],
+      username: [this.user.username,  Validators.compose(
+        [Validators.minLength(2), Validators.required])],
+      email: [this.user.email, Validators.compose(
+        [Validators.email, Validators.required])],
     })
     this.userId = this.activatedRoute.snapshot.params.id;
   }
@@ -31,8 +34,18 @@ export class EditUserComponent implements OnInit {
       ...this.userSignUpFG.value,
       id: this.userId
     }
-    this.usersService.updateUser(user);
+    this.usersService.updateUser(user, this.path);
     // console.log(this.userSignUpFG.value);
+
+  }
+
+  onFileChanged(e: any,id:string){
+    this.path = e.target.files[0];
+    //trzeba sprawdzac czy jest pierwszy el
+    // console.log(e);
+    // console.log(path);
+
+    // this.usersService.updateAvatar(path,id);
 
   }
 

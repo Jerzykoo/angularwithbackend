@@ -1,21 +1,23 @@
 import { Injectable } from '@angular/core';
 import { User } from './models/user.model';
 import * as Parse from 'parse';
-import { Observable, Subject } from 'rxjs';
+import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { Router } from '@angular/router';
+import { UIService } from './ui.service';
 @Injectable({
   providedIn: 'root'
 })
 export class UsersService {
-  private users: User[] = [];
   private isAuthenticated = false;
-  activeUser!: any;
-  authChange = new Subject<boolean>();
 
-  initChange = new Subject<boolean>();
+  activeUser!: User;
+  authChange = new BehaviorSubject<boolean>(false);
+  userChange = new BehaviorSubject<User>(this.activeUser);
+  avatarChange = new BehaviorSubject<boolean>(false);
+
 
   userSubject = new Subject<User[]>();
-  constructor(private router: Router) {
+  constructor(private router: Router, private uiService: UIService) {
     const Parse = require('parse');
 
     Parse.serverURL = 'https://parseapi.back4app.com';
@@ -24,38 +26,52 @@ export class UsersService {
       'amffx9uRAZzjUFdzWnRTxo3GyDskisqcIA7KcNOw'
     );
 
-    this.initChange.next(true);
-    // this.authChange.next(false);
-    // this.fetchUsers();
   }
 
   init(){
     var currentUser = Parse.User.current();
     if (currentUser) {
+      console.log(currentUser);
 
-      const email:string = currentUser.get('email');
-      const username:string = currentUser.get('username');
-      const avatarPicture:string = currentUser.get('avatarPicture');
-      this.activeUser = {
-        username,
-        email,
-        avatarPicture,
-        id: currentUser.id
-      };
-        this.isAuthenticated = true;
-        this.initChange.next(true);
-        // this.router.navigate(['/user']);
-        console.log('a');
-    } else {
-      this.initChange.next(false);
+      this.isAuthenticated = true;
+      this.authChange.next(true);
+      } else {
+      this.authChange.next(false);
+      this.isAuthenticated = false;
       console.log('nie ma zalogowanego');
-      this.router.navigate(['/login']);
-        // show the signup or login page
     }
   }
 
   getUser(){
     return this.activeUser;
+  }
+
+  getCurrentUser(){
+   (async () => {
+      try {
+        // let user: Parse.User = await Parse.User.logIn(this.userLoggedIn.username,this.userLoggedIn.password);
+        const currentUser: any = Parse.User.current();
+        // const currentUser: Parse.User = Parse.User.current();
+        console.log('Current logged in user', currentUser);
+
+        this.activeUser = {
+          username: currentUser.attributes.username,
+          email: currentUser.attributes.email,
+          avatarPicture: currentUser.attributes.avatarPicture,
+          isAvatar: currentUser.attributes.isAvatar,
+          id: currentUser.id
+        };
+
+        console.log(this.activeUser);
+
+        // this.userChange.next(this.activeUser);
+      } catch (error: any) {
+        console.error('Error while logging in user', error);
+      }
+    })();
+    if(this.activeUser){
+      return this.activeUser;
+    }
   }
 
   isAuth(){
@@ -68,21 +84,14 @@ export class UsersService {
       // Pass the username and password to logIn function
       let user: Parse.User = await Parse.User.logIn(userInfo.username,userInfo.password);
       // Do stuff after successful login
-      const email:string = user.get('email');
-      const username:string = user.get('username');
-      const avatarPicture:string = user.get('avatarPicture');
-      this.activeUser = {
-        username,
-        email,
-        avatarPicture,
-        id: user.id
-      };
+      // this.getCurrentUser();
       this.isAuthenticated = true;
       this.authChange.next(true);
       this.router.navigate(['/user']);
       console.log('Logged in user', user);
     } catch (error: any) {
-      console.error('Error while logging in user', error);
+      console.error('Error while logging in user', error.message);
+      this.uiService.showSnackBar(error.message,null,1000);
       this.authChange.next(false);
       this.isAuthenticated = false;
     }
@@ -98,19 +107,54 @@ export class UsersService {
     user.set('email', userInfo.email);
     user.set('password', userInfo.password);
     user.set('avatarPicture', new Parse.File("resume.txt", { base64: btoa("My file content") }));
+    user.set('isAvatar', false);
     try {
       let userResult: Parse.User = await user.signUp();
       console.log('User signed up', userResult);
+      this.uiService.showSnackBar('Rejestracja zakończona pomyślnie :)',null,3000);
+      this.router.navigate(['/login']);
     } catch (error: any) {
+      this.uiService.showSnackBar(error.message,null,1000);
       console.error('Error while signing up user', error);
     }
   })();
  }
 
- updateUser(userData: any){
+ updateAvatar(avatar: File,id: string){
   (async () => {
     const User: Parse.User = new Parse.User();
     const query: Parse.Query = new Parse.Query('User');
+
+    try {
+      // Finds the user by its ID
+      let user: Parse.Object = await query.get(id);
+      //sprawdzenie
+      // Updates the data we want
+      user.set('avatarPicture', new Parse.File('zdjecie.jpg',avatar) );
+      user.set('isAvatar', true);
+      // user.set('avatarPicture', new Parse.File('napoli.jpg', { base64: btoa("My file content") }));
+      try {
+        // Saves the user with the updated data
+        // this.getCurrentUser();
+        let response: Parse.Object = await user.save();
+        console.log(user);
+
+        window.location.reload();
+        console.log('Updated user', response);
+      } catch (error: any) {
+        console.error('Error while updating user', error);
+      }
+    } catch (error: any) {
+      console.error('Error while retrieving user', error);
+    }
+  })();
+ }
+
+ updateUser(userData: any, avatar: File){
+  (async () => {
+    const User: Parse.User = new Parse.User();
+    const query: Parse.Query = new Parse.Query('User');
+    console.log(avatar);
 
     try {
       // Finds the user by its ID
@@ -118,15 +162,16 @@ export class UsersService {
       // Updates the data we want
       user.set('username', userData.username);
       user.set('email', userData.email);
+      if(avatar){
+        user.set('avatarPicture', new Parse.File('zdjecie.jpg',avatar) );
+      }
+
       try {
         // Saves the user with the updated data
-        this.activeUser = {
-          username: user.get('username'),
-          email: user.get('email'),
-          id: user.id
-        };
+        // this.getCurrentUser();
 
         let response: Parse.Object = await user.save();
+
         this.router.navigate(['/user']);
         console.log('Updated user', response);
       } catch (error: any) {
@@ -139,75 +184,26 @@ export class UsersService {
  }
 
 
-
-//  update(id: any){
-//   (async () => {
-//     const query: Parse.Query = new Parse.Query('users');
-//     try {
-//       // here you put the objectId that you want to update
-//       const object: Parse.Object = await query.get(id);
-//       object.set('email', 'patryk@gmail.com');
-//       try {
-//         const response: Parse.Object = await object.save();
-//         console.log(response.get('email'));
-//         console.log('email updated', response);
-//         // this.fetchUsers();
-//       } catch (error: any) {
-//         console.error('Error while updating ', error);
-//       }
-//     } catch (error: any) {
-//       console.error('Error while retrieving object ', error);
-//     }
-//   })();
-//  }
-
-
-//  add(){
-//   (async () => {
-//     const myNewObject: Parse.Object = new Parse.Object('users');
-//     myNewObject.set('email', 'ola@gmail.com');
-//     myNewObject.set('password', '123456');
-//     try {
-//       const result: Parse.Object = await myNewObject.save();
-//       // Access the Parse Object attributes using the .GET method
-//       console.log('object email: ', result.get('email'));
-//       console.log('object password: ', result.get('password'));
-//       console.log('ParseObject created', result);
-//       // this.fetchUsers();
-//     } catch (error: any) {
-//       console.error('Error while creating ParseObject: ', error);
-//     }
-//   })();
-//  }
-
-//  getUsers(){
-//    return this.users;
-//  }
-
-//  fetchUsers(){
-//   (async () => {
-//     const query: Parse.Query = new Parse.Query('users');
-
-//     const results: Parse.Object[] = await query.find();
-//     try {
-//       this.users = [];
-//       for (const object of results) {
-//         const email: string = object.get('email');
-//         const password: string = object.get('password');
-//         const user: User = {
-//           email,
-//           password,
-//           id: object.id
-//         }
-//         this.users.push(user);
-//       }
-
-//     } catch (error: any) {
-//       console.error('Error while fetching users', error);
-//     }
-//     this.userSubject.next(this.users);
-//   })();
-// }
+logout(){
+  (async () => {
+    try {
+      await Parse.User.logOut();
+      // To verify that current user is now empty, currentAsync can be used
+      const currentUser: any = await Parse.User.current();
+      if (currentUser === null) {
+        console.log('Success! No user is logged in anymore!');
+        this.authChange.next(false);
+        this.router.navigate(['/login']);
+      }
+      // Update state variable holding current user
+      // getCurrentUser();
+      return true;
+    } catch (error: any) {
+      alert(`Error! ${error.message}`);
+      return false;
+    }
+  })();
+}
 
 
 }

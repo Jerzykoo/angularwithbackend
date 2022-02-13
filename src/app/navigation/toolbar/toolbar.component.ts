@@ -9,7 +9,6 @@ import { UsersService } from 'src/app/users.service';
 })
 export class ToolbarComponent implements OnInit, OnDestroy {
   authSubscription!: Subscription;
-  initSubscription!: Subscription;
   isAuth = false;
   constructor(private usersService: UsersService) { }
 
@@ -17,17 +16,15 @@ export class ToolbarComponent implements OnInit, OnDestroy {
     this.authSubscription = this.usersService.authChange.subscribe((result) => {
       this.isAuth = result;
       // console.log(result);
-
-    })
-    this.initSubscription = this.usersService.initChange.subscribe((result) => {
-      this.isAuth = result;
-      console.log(result);
-
     })
   }
 
   ngOnDestroy(): void {
     this.authSubscription.unsubscribe();
+  }
+
+  onLogout(){
+    this.usersService.logout();
   }
 
 
