@@ -8,5 +8,5 @@
     <input type="password" placeholder="password" formControlName='password' matInput>
     <mat-error>Hasło musi składać się z conajmniej 4 znaków.</mat-error>
   </mat-form-field>
-  <button (click)="signIn()" mat-raised-button color="primary">zaloguj</button>
+  <button (click)="signIn()" mat-raised-button color="primary" [disabled]="userSignInFG.invalid">zaloguj</button>
 </form>
