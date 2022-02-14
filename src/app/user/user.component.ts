@@ -1,7 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { User } from 'parse';
-import { Observable, Subscription } from 'rxjs';
 import { UsersService } from '../users.service';
 
 @Component({
@@ -12,6 +10,7 @@ import { UsersService } from '../users.service';
 export class UserComponent implements OnInit, OnDestroy {
   user!: any;
   isAvatar!: boolean;
+  isCorrectFile :boolean = true;
   constructor(private usersService: UsersService,private router: Router) { }
 
   ngOnInit(): void {
@@ -30,12 +29,15 @@ export class UserComponent implements OnInit, OnDestroy {
   }
 
   onFileChanged(e: any,id:string){
-    let path = e.target.files[0];
-    //trzeba sprawdzac czy jest pierwszy el
-    // console.log(e);
-console.log(path);
+    let file = e.target.files[0];
 
-    this.usersService.updateAvatar(path,id);
+    const acceptedImageTypes = ['image/jpeg'];
+    this.isCorrectFile = file && acceptedImageTypes.includes(file['type'])
+    if(this.isCorrectFile){
+      this.usersService.updateAvatar(file,id);
+    }else{
+      this.isCorrectFile = false;
+    }
 
   }
 }

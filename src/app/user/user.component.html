@@ -7,19 +7,21 @@
         <div *ngIf="!isAvatar">
           Dodaj awatar:
           <input type="file" (change)="onFileChanged($event,user.id)">
+
         </div>
+        <mat-error *ngIf="!isCorrectFile">Avatar musi być w formacie jpg</mat-error>
        <div *ngIf="isAvatar">
         <img src="{{user.avatarPicture._url}}" alt="" class="img">
        </div>
         <!-- <div style="background-image: url({{user.avatarPicture._url}});" class="img"></div> -->
       </div>
       <div class="attribute">
-        <p><span class="bold">username: </span> <span>{{user.username}}</span></p>
+        <p><span class="bold">Nazwa użytkownika: </span> <span>{{user.username}}</span></p>
       </div>
       <div class="attribute">
-        <p><span class="bold">adres email: </span> <span>{{user.email}}</span></p>
+        <p><span class="bold">Adres email: </span> <span>{{user.email}}</span></p>
       </div>
-      <button (click)="onEditClick(user.id)"  mat-raised-button color="warn">update user</button>
+      <button (click)="onEditClick(user.id)"  mat-raised-button color="warn" class="change">Zmień dane</button>
     </div>
   </div>
 

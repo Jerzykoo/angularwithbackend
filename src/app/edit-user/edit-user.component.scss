@@ -1,12 +1,7 @@
-form{
-  margin: 20px 0 20px 20px;
-  display: flex;
-  width: 240px;
-  flex-direction: column;
-}
 
-div{
-  margin-bottom: 15px;
+
+div.avatar{
+  margin-bottom: 18px;
 }
 
 button{
@@ -17,4 +12,7 @@ button{
   margin-bottom: 5px;
 }
 
+mat-form-field{
+  margin-bottom: 18px;
+}
 

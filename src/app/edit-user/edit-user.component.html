@@ -1,16 +1,19 @@
 <form [formGroup]="userSignUpFG">
-  <div>
+  <div class="avatar">
     <p class="avatarChange">Zmień awatar</p>
-    <input type="file" (change)="onFileChanged($event,user.id)" class="file">
+    <input type="file" (change)="onFileChanged($event,user.id)" class="file" >
+    <mat-error *ngIf="!isCorrectFile">Avatar musi być w formacie jpg</mat-error>
   </div>
   <mat-form-field>
-    <input type="text" placeholder="username" formControlName='username' matInput>
+    <input type="text" placeholder="Nazwa użytkownika" formControlName='username' matInput>
+    <mat-error >Nazwa użytkownika musi składać się z conajmniej 3 znaków.</mat-error>
   </mat-form-field>
   <mat-form-field>
-    <input type="text" placeholder="email" formControlName='email' matInput>
+    <input type="text" placeholder="Email" formControlName='email' matInput>
+    <mat-error>Niewłaściwy zapis adresu email</mat-error>
   </mat-form-field>
 
-  <button (click)="onUpdate()" [disabled]="userSignUpFG.invalid" mat-raised-button color="warn">Update</button>
+  <button (click)="onUpdate()" [disabled]="userSignUpFG.invalid || !isCorrectFile" mat-raised-button color="warn">Update</button>
 </form>
 
 

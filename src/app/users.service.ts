@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { User } from './models/user.model';
 import * as Parse from 'parse';
-import { BehaviorSubject, Observable, Subject } from 'rxjs';
+import { BehaviorSubject, Subject } from 'rxjs';
 import { Router } from '@angular/router';
 import { UIService } from './ui.service';
 @Injectable({
@@ -12,11 +12,7 @@ export class UsersService {
 
   activeUser!: User;
   authChange = new BehaviorSubject<boolean>(false);
-  userChange = new BehaviorSubject<User>(this.activeUser);
-  avatarChange = new BehaviorSubject<boolean>(false);
 
-
-  userSubject = new Subject<User[]>();
   constructor(private router: Router, private uiService: UIService) {
     const Parse = require('parse');
 
@@ -49,10 +45,7 @@ export class UsersService {
   getCurrentUser(){
    (async () => {
       try {
-        // let user: Parse.User = await Parse.User.logIn(this.userLoggedIn.username,this.userLoggedIn.password);
         const currentUser: any = Parse.User.current();
-        // const currentUser: Parse.User = Parse.User.current();
-        console.log('Current logged in user', currentUser);
 
         this.activeUser = {
           username: currentUser.attributes.username,
@@ -62,9 +55,6 @@ export class UsersService {
           id: currentUser.id
         };
 
-        console.log(this.activeUser);
-
-        // this.userChange.next(this.activeUser);
       } catch (error: any) {
         console.error('Error while logging in user', error);
       }
@@ -81,14 +71,12 @@ export class UsersService {
  login(userInfo: any){
   (async () => {
     try {
-      // Pass the username and password to logIn function
       let user: Parse.User = await Parse.User.logIn(userInfo.username,userInfo.password);
-      // Do stuff after successful login
-      // this.getCurrentUser();
+
       this.isAuthenticated = true;
       this.authChange.next(true);
       this.router.navigate(['/user']);
-      console.log('Logged in user', user);
+
     } catch (error: any) {
       console.error('Error while logging in user', error.message);
       this.uiService.showSnackBar(error.message,null,1000);
@@ -99,7 +87,6 @@ export class UsersService {
  }
 
  register(userInfo: any){
-   console.log(userInfo);
 
   (async () => {
     const user: Parse.User = new Parse.User();
@@ -110,7 +97,7 @@ export class UsersService {
     user.set('isAvatar', false);
     try {
       let userResult: Parse.User = await user.signUp();
-      console.log('User signed up', userResult);
+
       this.uiService.showSnackBar('Rejestracja zakończona pomyślnie :)',null,3000);
       this.isAuthenticated = true;
       this.authChange.next(true);
@@ -128,16 +115,11 @@ export class UsersService {
     const query: Parse.Query = new Parse.Query('User');
 
     try {
-      // Finds the user by its ID
       let user: Parse.Object = await query.get(id);
-      //sprawdzenie
-      // Updates the data we want
       user.set('avatarPicture', new Parse.File('zdjecie.jpg',avatar) );
       user.set('isAvatar', true);
-      // user.set('avatarPicture', new Parse.File('napoli.jpg', { base64: btoa("My file content") }));
+
       try {
-        // Saves the user with the updated data
-        // this.getCurrentUser();
         let response: Parse.Object = await user.save();
         console.log(user);
 
@@ -159,21 +141,15 @@ export class UsersService {
     console.log(avatar);
 
     try {
-      // Finds the user by its ID
       let user: Parse.Object = await query.get(userData.id);
-      // Updates the data we want
+
       user.set('username', userData.username);
       user.set('email', userData.email);
       if(avatar){
         user.set('avatarPicture', new Parse.File('zdjecie.jpg',avatar) );
       }
-
       try {
-        // Saves the user with the updated data
-        // this.getCurrentUser();
-
         let response: Parse.Object = await user.save();
-
         this.router.navigate(['/user']);
         console.log('Updated user', response);
       } catch (error: any) {
@@ -190,15 +166,11 @@ logout(){
   (async () => {
     try {
       await Parse.User.logOut();
-      // To verify that current user is now empty, currentAsync can be used
       const currentUser: any = await Parse.User.current();
       if (currentUser === null) {
-        console.log('Success! No user is logged in anymore!');
         this.authChange.next(false);
         this.router.navigate(['/login']);
       }
-      // Update state variable holding current user
-      // getCurrentUser();
       return true;
     } catch (error: any) {
       alert(`Error! ${error.message}`);
@@ -206,6 +178,5 @@ logout(){
     }
   })();
 }
-
 
 }
